@@ -1,6 +1,7 @@
 import { Board } from './Board';
 
-type GameSettings = {
+export type GameSettings = {
+	canvasSize: { width: number; height: number };
 	ticks: number;
 	cellColor: string;
 };
@@ -13,6 +14,8 @@ export class GameManager {
 		this.canvas = canvas;
 		this.settings = settings;
 		this.board = board;
+
+		this.InitCanvas();
 	}
 
 	Start() {
@@ -55,5 +58,36 @@ export class GameManager {
 		if (context) {
 			context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 		}
+	}
+
+	InitCanvas() {
+		this.canvas.width = this.settings.canvasSize.width;
+		this.canvas.height = this.settings.canvasSize.height;
+
+		this.canvas.addEventListener('click', event => {
+			const boundingRect = this.canvas.getBoundingClientRect();
+			const offsetX = event.clientX - boundingRect.left;
+			const offsetY = event.clientY - boundingRect.top;
+
+			const x = Math.floor((offsetX * this.board.width) / this.canvas.width);
+			const y = Math.floor((offsetY * this.board.height) / this.canvas.width);
+
+			this.board.SetCell({ x, y }, true);
+			this.DrawBoard();
+		});
+
+		this.canvas.addEventListener('contextmenu', event => {
+			event.preventDefault();
+
+			const boundingRect = this.canvas.getBoundingClientRect();
+			const offsetX = event.clientX - boundingRect.left;
+			const offsetY = event.clientY - boundingRect.top;
+
+			const x = Math.floor((offsetX * this.board.width) / this.canvas.width);
+			const y = Math.floor((offsetY * this.board.height) / this.canvas.width);
+
+			this.board.SetCell({ x, y }, false);
+			this.DrawBoard();
+		});
 	}
 }
