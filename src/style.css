@@ -34,7 +34,7 @@ body {
   cursor: pointer;
 }
 
-.gamepad .ticks-div {
+.gamepad>div {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -49,8 +49,38 @@ body {
   outline: none;
 }
 
-.gamepad .ticks-div .invalid {
-  border: 1px solid red;
+.gamepad .board-div input {
+  height: 20px;
+  width: 50px;
+  appearance: none;
+  border-radius: 5px;
+  border: 1px solid lightgray;
+  outline: none;
+}
+
+.gamepad .color-div input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 40px;
+  height: 40px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.gamepad .color-div input::-webkit-color-swatch {
+  border-radius: 5px;
+  border: none;
+}
+
+.gamepad .color-div input::-moz-color-swatch {
+  border-radius: 5px;
+  border: none;
+}
+
+.invalid {
+  border: 1px solid red !important;
 }
 
 .gamepad .reset-btn {

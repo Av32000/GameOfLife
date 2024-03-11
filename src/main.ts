@@ -10,12 +10,12 @@ function Init() {
 
 	const settings: GameSettings = {
 		canvasSize: { width: window.innerWidth, height: window.innerWidth },
-		cellColor: 'blue',
+		cellColor: '#43B581',
 		ticks: 10,
 	};
 
 	const gameManager = new GameManager(board, canvas, settings);
-	gameManager.InitGamepad()
+	gameManager.InitGamepad();
 }
 
-Init()
+Init();

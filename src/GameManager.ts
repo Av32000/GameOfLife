@@ -10,24 +10,25 @@ export class GameManager {
 	canvas: HTMLCanvasElement;
 	settings: GameSettings;
 	board: Board;
-	isPlaying: Boolean
-	interval = 0
-	gamePad: HTMLDivElement | null = null
+	isPlaying: Boolean;
+	interval = 0;
+	gamePad: HTMLDivElement | null = null;
 	constructor(board: Board, canvas: HTMLCanvasElement, settings: GameSettings) {
 		this.canvas = canvas;
 		this.settings = settings;
 		this.board = board;
-		this.isPlaying = false
+		this.isPlaying = false;
 
 		this.InitCanvas();
-		this.DrawBoard()
+		this.DrawBoard();
 	}
 
 	Start() {
-		this.isPlaying = true
+		this.isPlaying = true;
 		this.DrawBoard();
 
-		if (this.gamePad) (this.gamePad.getElementsByClassName("play-btn")[0] as HTMLImageElement).src = "/pause.svg"
+		if (this.gamePad)
+			(this.gamePad.getElementsByClassName('play-btn')[0] as HTMLImageElement).src = './pause.svg';
 
 		this.interval = setInterval(() => {
 			this.board.Forward();
@@ -36,10 +37,11 @@ export class GameManager {
 	}
 
 	Stop() {
-		if (this.gamePad) (this.gamePad.getElementsByClassName("play-btn")[0] as HTMLImageElement).src = "/play.svg"
+		if (this.gamePad)
+			(this.gamePad.getElementsByClassName('play-btn')[0] as HTMLImageElement).src = './play.svg';
 
-		this.isPlaying = false
-		clearInterval(this.interval)
+		this.isPlaying = false;
+		clearInterval(this.interval);
 	}
 
 	DrawBoard() {
@@ -108,59 +110,122 @@ export class GameManager {
 	}
 
 	InitGamepad() {
-		const gamepad = document.createElement("div")
-		gamepad.className = "gamepad"
+		const gamepad = document.createElement('div');
+		gamepad.className = 'gamepad';
 
-		const title = document.createElement("p")
-		title.className = "title"
-		title.innerText = "Settings"
+		const title = document.createElement('p');
+		title.className = 'title';
+		title.innerText = 'Settings';
 
-		const playBtn = document.createElement("img")
-		playBtn.className = "play-btn"
-		playBtn.src = "./play.svg"
-		playBtn.addEventListener("click", () => {
+		const playBtn = document.createElement('img');
+		playBtn.className = 'play-btn';
+		playBtn.src = './play.svg';
+		playBtn.addEventListener('click', () => {
 			if (this.isPlaying) {
-				this.Stop()
-				playBtn.src = "./play.svg"
+				this.Stop();
+				playBtn.src = './play.svg';
 			} else {
-				this.Start()
-				playBtn.src = "./pause.svg"
+				this.Start();
+				playBtn.src = './pause.svg';
 			}
-		})
+		});
 
-		const tickDiv = document.createElement("div")
-		tickDiv.className = "ticks-div"
-		const tickText = document.createElement("p")
-		tickText.innerText = "ticks/s"
-		const tickBox = document.createElement("input")
-		tickBox.type = "number"
-		tickBox.value = this.settings.ticks.toString()
-		tickBox.addEventListener("input", () => {
-			const newValue = parseInt(tickBox.value)
+		const tickDiv = document.createElement('div');
+		tickDiv.className = 'ticks-div';
+		const tickText = document.createElement('p');
+		tickText.innerText = 'ticks/s';
+		const tickBox = document.createElement('input');
+		tickBox.type = 'number';
+		tickBox.value = this.settings.ticks.toString();
+		tickBox.addEventListener('input', () => {
+			const newValue = parseInt(tickBox.value);
 			if (!isNaN(newValue) && newValue > 0) {
-				tickBox.classList.remove("invalid")
-				this.settings.ticks = newValue
-				this.Stop()
-				this.Start()
+				tickBox.classList.remove('invalid');
+				this.settings.ticks = newValue;
+				if (this.isPlaying) {
+					this.Stop();
+					this.Start();
+				}
 			} else {
-				tickBox.classList.add("invalid")
+				tickBox.classList.add('invalid');
 			}
-		})
+		});
 
-		const resetBtn = document.createElement("p")
-		resetBtn.innerText = "Reset"
-		resetBtn.className = "reset-btn"
-		resetBtn.addEventListener("click", () => {
-			this.Stop()
-			this.settings.ticks = 10
-			tickBox.value = "10"
-			this.board = new Board(this.board.width, this.board.height)
-			this.DrawBoard()
-		})
+		const boardSizeDiv = document.createElement('div');
+		boardSizeDiv.className = 'board-div';
 
-		tickDiv.append(tickBox, tickText)
-		gamepad.append(title, playBtn, tickDiv, resetBtn)
+		const boardXText = document.createElement('p');
+		boardXText.innerText = 'Board Size :';
+		const boardXBox = document.createElement('input');
+		boardXBox.type = 'number';
+		boardXBox.value = this.board.width.toString();
+		boardXBox.addEventListener('input', () => {
+			const newValue = parseInt(boardXBox.value);
+			if (!isNaN(newValue) && newValue > 0) {
+				boardXBox.classList.remove('invalid');
+				this.board.width = newValue;
+				this.board.ResetBoard();
+				this.DrawBoard();
+				if (this.isPlaying) {
+					this.Stop();
+					this.Start();
+				}
+			} else {
+				boardXBox.classList.add('invalid');
+			}
+		});
 
-		document.getElementById("app")?.appendChild(gamepad)
+		const boardYText = document.createElement('p');
+		boardYText.innerText = ' / ';
+		const boardYBox = document.createElement('input');
+		boardYBox.type = 'number';
+		boardYBox.value = this.board.height.toString();
+		boardYBox.addEventListener('input', () => {
+			const newValue = parseInt(boardYBox.value);
+			if (!isNaN(newValue) && newValue > 0) {
+				boardYBox.classList.remove('invalid');
+				this.board.height = newValue;
+				this.board.ResetBoard();
+				this.DrawBoard();
+				if (this.isPlaying) {
+					this.Stop();
+					this.Start();
+				}
+			} else {
+				boardYBox.classList.add('invalid');
+			}
+		});
+
+		const cellColorDiv = document.createElement('div');
+		cellColorDiv.className = 'color-div';
+		const cellColorText = document.createElement('p');
+		cellColorText.innerText = 'Cells Color : ';
+		const cellColorBox = document.createElement('input');
+		cellColorBox.type = 'color';
+		cellColorBox.value = this.settings.cellColor;
+		cellColorBox.addEventListener('change', () => {
+			this.settings.cellColor = cellColorBox.value;
+			this.DrawBoard();
+		});
+
+		const resetBtn = document.createElement('p');
+		resetBtn.innerText = 'Reset';
+		resetBtn.className = 'reset-btn';
+		resetBtn.addEventListener('click', () => {
+			this.Stop();
+			playBtn.src = './play.svg';
+			this.settings.ticks = 10;
+			tickBox.value = '10';
+			this.board = new Board(this.board.width, this.board.height);
+			this.DrawBoard();
+		});
+
+		tickDiv.append(tickBox, tickText);
+		boardSizeDiv.append(boardXText, boardXBox, boardYText, boardYBox);
+		cellColorDiv.append(cellColorText, cellColorBox);
+
+		gamepad.append(title, playBtn, tickDiv, boardSizeDiv, cellColorDiv, resetBtn);
+
+		document.getElementById('app')?.appendChild(gamepad);
 	}
 }
