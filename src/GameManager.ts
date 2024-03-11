@@ -10,20 +10,36 @@ export class GameManager {
 	canvas: HTMLCanvasElement;
 	settings: GameSettings;
 	board: Board;
+	isPlaying: Boolean
+	interval = 0
+	gamePad: HTMLDivElement | null = null
 	constructor(board: Board, canvas: HTMLCanvasElement, settings: GameSettings) {
 		this.canvas = canvas;
 		this.settings = settings;
 		this.board = board;
+		this.isPlaying = false
 
 		this.InitCanvas();
+		this.DrawBoard()
 	}
 
 	Start() {
+		this.isPlaying = true
 		this.DrawBoard();
-		setInterval(() => {
+
+		if (this.gamePad) (this.gamePad.getElementsByClassName("play-btn")[0] as HTMLImageElement).src = "/pause.svg"
+
+		this.interval = setInterval(() => {
 			this.board.Forward();
 			this.DrawBoard();
 		}, 1000 / this.settings.ticks);
+	}
+
+	Stop() {
+		if (this.gamePad) (this.gamePad.getElementsByClassName("play-btn")[0] as HTMLImageElement).src = "/play.svg"
+
+		this.isPlaying = false
+		clearInterval(this.interval)
 	}
 
 	DrawBoard() {
@@ -89,5 +105,62 @@ export class GameManager {
 			this.board.SetCell({ x, y }, false);
 			this.DrawBoard();
 		});
+	}
+
+	InitGamepad() {
+		const gamepad = document.createElement("div")
+		gamepad.className = "gamepad"
+
+		const title = document.createElement("p")
+		title.className = "title"
+		title.innerText = "Settings"
+
+		const playBtn = document.createElement("img")
+		playBtn.className = "play-btn"
+		playBtn.src = "/play.svg"
+		playBtn.addEventListener("click", () => {
+			if (this.isPlaying) {
+				this.Stop()
+				playBtn.src = "/play.svg"
+			} else {
+				this.Start()
+				playBtn.src = "/pause.svg"
+			}
+		})
+
+		const tickDiv = document.createElement("div")
+		tickDiv.className = "ticks-div"
+		const tickText = document.createElement("p")
+		tickText.innerText = "ticks/s"
+		const tickBox = document.createElement("input")
+		tickBox.type = "number"
+		tickBox.value = this.settings.ticks.toString()
+		tickBox.addEventListener("input", () => {
+			const newValue = parseInt(tickBox.value)
+			if (!isNaN(newValue) && newValue > 0) {
+				tickBox.classList.remove("invalid")
+				this.settings.ticks = newValue
+				this.Stop()
+				this.Start()
+			} else {
+				tickBox.classList.add("invalid")
+			}
+		})
+
+		const resetBtn = document.createElement("p")
+		resetBtn.innerText = "Reset"
+		resetBtn.className = "reset-btn"
+		resetBtn.addEventListener("click", () => {
+			this.Stop()
+			this.settings.ticks = 10
+			tickBox.value = "10"
+			this.board = new Board(this.board.width, this.board.height)
+			this.DrawBoard()
+		})
+
+		tickDiv.append(tickBox, tickText)
+		gamepad.append(title, playBtn, tickDiv, resetBtn)
+
+		document.getElementById("app")?.appendChild(gamepad)
 	}
 }
