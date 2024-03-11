@@ -117,14 +117,14 @@ export class GameManager {
 
 		const playBtn = document.createElement("img")
 		playBtn.className = "play-btn"
-		playBtn.src = "/play.svg"
+		playBtn.src = "./play.svg"
 		playBtn.addEventListener("click", () => {
 			if (this.isPlaying) {
 				this.Stop()
-				playBtn.src = "/play.svg"
+				playBtn.src = "./play.svg"
 			} else {
 				this.Start()
-				playBtn.src = "/pause.svg"
+				playBtn.src = "./pause.svg"
 			}
 		})
 
