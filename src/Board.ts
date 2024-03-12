@@ -110,7 +110,7 @@ export class Board {
 				}
 				currentCount = '';
 			} else if (chr == '$') {
-				currentIndexY++;
+				currentIndexY += currentCount ? parseInt(currentCount) : 1;
 				currentIndexX = 0;
 				currentCount = '';
 			} else if (chr == '!') {
