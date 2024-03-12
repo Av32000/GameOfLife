@@ -22,7 +22,27 @@
 </head>
 
 <body>
-  <div id="app"></div>
+  <div id="app">
+    <div class="gamepad">
+      <p class="title">Settings</p>
+      <img class="play-btn" src="./play.svg" />
+      <div class="ticks-div">
+        <input type="number" />
+        <p>ticks/s</p>
+      </div>
+      <div class="board-div">
+        <p>Board Size :</p>
+        <input type="number" id="board-x">
+        <p> / </p>
+        <input type="number" id="board-y">
+      </div>
+      <div class="color-div">
+        <p>Cells Color :</p>
+        <input type="color">
+      </div>
+      <p class="reset-btn">Reset</p>
+    </div>
+  </div>
   <script type="module" src="/src/main.ts"></script>
 </body>
 

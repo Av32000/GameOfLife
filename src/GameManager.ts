@@ -110,16 +110,7 @@ export class GameManager {
 	}
 
 	InitGamepad() {
-		const gamepad = document.createElement('div');
-		gamepad.className = 'gamepad';
-
-		const title = document.createElement('p');
-		title.className = 'title';
-		title.innerText = 'Settings';
-
-		const playBtn = document.createElement('img');
-		playBtn.className = 'play-btn';
-		playBtn.src = './play.svg';
+		const playBtn = document.querySelector(".gamepad .play-btn") as HTMLImageElement
 		playBtn.addEventListener('click', () => {
 			if (this.isPlaying) {
 				this.Stop();
@@ -130,12 +121,7 @@ export class GameManager {
 			}
 		});
 
-		const tickDiv = document.createElement('div');
-		tickDiv.className = 'ticks-div';
-		const tickText = document.createElement('p');
-		tickText.innerText = 'ticks/s';
-		const tickBox = document.createElement('input');
-		tickBox.type = 'number';
+		const tickBox = document.querySelector(".gamepad .ticks-div input") as HTMLInputElement;
 		tickBox.value = this.settings.ticks.toString();
 		tickBox.addEventListener('input', () => {
 			const newValue = parseInt(tickBox.value);
@@ -151,13 +137,8 @@ export class GameManager {
 			}
 		});
 
-		const boardSizeDiv = document.createElement('div');
-		boardSizeDiv.className = 'board-div';
-
-		const boardXText = document.createElement('p');
-		boardXText.innerText = 'Board Size :';
-		const boardXBox = document.createElement('input');
-		boardXBox.type = 'number';
+		const boardXBox = document.querySelector(".gamepad .board-div #board-x") as HTMLInputElement
+		const boardYBox = document.querySelector(".gamepad .board-div #board-y") as HTMLInputElement
 		boardXBox.value = this.board.width.toString();
 		boardXBox.addEventListener('input', () => {
 			const newValue = parseInt(boardXBox.value);
@@ -175,10 +156,6 @@ export class GameManager {
 			}
 		});
 
-		const boardYText = document.createElement('p');
-		boardYText.innerText = ' / ';
-		const boardYBox = document.createElement('input');
-		boardYBox.type = 'number';
 		boardYBox.value = this.board.height.toString();
 		boardYBox.addEventListener('input', () => {
 			const newValue = parseInt(boardYBox.value);
@@ -196,21 +173,14 @@ export class GameManager {
 			}
 		});
 
-		const cellColorDiv = document.createElement('div');
-		cellColorDiv.className = 'color-div';
-		const cellColorText = document.createElement('p');
-		cellColorText.innerText = 'Cells Color : ';
-		const cellColorBox = document.createElement('input');
-		cellColorBox.type = 'color';
+		const cellColorBox = document.querySelector(".gamepad .color-div input") as HTMLInputElement
 		cellColorBox.value = this.settings.cellColor;
 		cellColorBox.addEventListener('change', () => {
 			this.settings.cellColor = cellColorBox.value;
 			this.DrawBoard();
 		});
 
-		const resetBtn = document.createElement('p');
-		resetBtn.innerText = 'Reset';
-		resetBtn.className = 'reset-btn';
+		const resetBtn = document.querySelector(".gamepad .reset-btn") as HTMLParagraphElement
 		resetBtn.addEventListener('click', () => {
 			this.Stop();
 			playBtn.src = './play.svg';
@@ -219,13 +189,5 @@ export class GameManager {
 			this.board = new Board(this.board.width, this.board.height);
 			this.DrawBoard();
 		});
-
-		tickDiv.append(tickBox, tickText);
-		boardSizeDiv.append(boardXText, boardXBox, boardYText, boardYBox);
-		cellColorDiv.append(cellColorText, cellColorBox);
-
-		gamepad.append(title, playBtn, tickDiv, boardSizeDiv, cellColorDiv, resetBtn);
-
-		document.getElementById('app')?.appendChild(gamepad);
 	}
 }
