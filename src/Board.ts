@@ -112,6 +112,7 @@ export class Board {
 			} else if (chr == '$') {
 				currentIndexY++;
 				currentIndexX = 0;
+				currentCount = '';
 			} else if (chr == '!') {
 				break;
 			} else {
