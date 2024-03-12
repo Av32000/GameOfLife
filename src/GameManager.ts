@@ -125,30 +125,45 @@ export class GameManager {
 		this.canvas.width = this.settings.canvasSize.width;
 		this.canvas.height = this.settings.canvasSize.height;
 
-		this.canvas.addEventListener('click', event => {
-			const boundingRect = this.canvas.getBoundingClientRect();
-			const offsetX = event.clientX - boundingRect.left;
-			const offsetY = event.clientY - boundingRect.top;
+		let mouseDown = false;
+		let mouseX: number;
+		let mouseY: number;
 
-			const x = Math.floor((offsetX * this.board.width) / this.canvas.width);
-			const y = Math.floor((offsetY * this.board.height) / this.canvas.width);
+		this.canvas.addEventListener('mousedown', event => {
+			mouseDown = true;
 
-			this.board.SetCell({ x, y }, true);
-			this.DrawBoard();
+			const handleClick = () => {
+				const boundingRect = this.canvas.getBoundingClientRect();
+				const offsetX = mouseX - boundingRect.left;
+				const offsetY = mouseY - boundingRect.top;
+
+				const x = Math.floor((offsetX * this.board.width) / this.canvas.width);
+				const y = Math.floor((offsetY * this.board.height) / this.canvas.width);
+
+				this.board.SetCell({ x, y }, event.button == 0);
+				this.DrawBoard();
+			};
+
+			handleClick();
+
+			const interval = setInterval(() => {
+				if (mouseDown) {
+					handleClick();
+				} else {
+					clearInterval(interval);
+				}
+			}, 50);
 		});
 
-		this.canvas.addEventListener('contextmenu', event => {
-			event.preventDefault();
+		this.canvas.addEventListener('mouseup', () => {
+			mouseDown = false;
+		});
 
-			const boundingRect = this.canvas.getBoundingClientRect();
-			const offsetX = event.clientX - boundingRect.left;
-			const offsetY = event.clientY - boundingRect.top;
+		this.canvas.addEventListener('contextmenu', e => e.preventDefault());
 
-			const x = Math.floor((offsetX * this.board.width) / this.canvas.width);
-			const y = Math.floor((offsetY * this.board.height) / this.canvas.width);
-
-			this.board.SetCell({ x, y }, false);
-			this.DrawBoard();
+		document.addEventListener('mousemove', event => {
+			mouseX = event.clientX;
+			mouseY = event.clientY;
 		});
 	}
 
