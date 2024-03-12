@@ -40,7 +40,24 @@
         <p>Cells Color :</p>
         <input type="color">
       </div>
+      <div class="files-div">
+        <p class="import-btn">Import</p>
+        <p class="export-btn">Export</p>
+      </div>
       <p class="reset-btn">Reset</p>
+    </div>
+    <div class="import-div hidden">
+      <p class="close-btn">✖</p>
+      <p>Import Pattern</p>
+      <input type="file" id="file" accept=".rle">
+      <div class="coord">
+        <p>Pattern Coords : </p>
+        <p>x :</p>
+        <input type="number" id="coord-x" value="0">
+        <p>y :</p>
+        <input type="number" id="coord-y" value="0">
+      </div>
+      <p class="import-btn">Import</p>
     </div>
   </div>
   <script type="module" src="/src/main.ts"></script>

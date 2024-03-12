@@ -12,10 +12,12 @@ function Init() {
 		canvasSize: { width: window.innerWidth, height: window.innerWidth },
 		cellColor: '#43B581',
 		ticks: 10,
+		importCellColor: '#ff7878',
 	};
 
 	const gameManager = new GameManager(board, canvas, settings);
 	gameManager.InitGamepad();
+	gameManager.InitImportDiv();
 }
 
 Init();

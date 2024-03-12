@@ -72,4 +72,51 @@ export class Board {
 
 		return result;
 	}
+
+	GetPatternSize(patternData: string) {
+		const lines = patternData.split('\n');
+
+		for (const line of lines) {
+			if (line.startsWith('x')) {
+				const width = parseInt(line.split('=')[1].split(',')[0]);
+				const height = parseInt(line.split('=')[2].split(',')[0]);
+				if (width && !isNaN(width) && height && !isNaN(height)) return { width, height };
+			}
+		}
+
+		return null;
+	}
+
+	ImportPattern(patternData: string, { x, y }: CellCoordinates) {
+		const patternSize = this.GetPatternSize(patternData);
+		if (!patternSize) throw new Error('Invalid Pattern');
+
+		let fullString = '';
+		patternData.split('\n').forEach(l => {
+			if (!l.startsWith('#') && !l.startsWith('x')) fullString += l.trim();
+		});
+
+		let currentCount = '';
+		const numbers = '0123456789';
+		let currentIndexX = 0;
+		let currentIndexY = 0;
+		for (let chr of fullString) {
+			if (numbers.includes(chr)) currentCount += chr;
+			else if (chr == 'b' || chr == 'o') {
+				const iter = currentCount ? parseInt(currentCount) : 1;
+				for (let i = 0; i < iter; i++) {
+					this.board[currentIndexX + x][currentIndexY + y] = chr == 'o';
+					currentIndexX++;
+				}
+				currentCount = '';
+			} else if (chr == '$') {
+				currentIndexY++;
+				currentIndexX = 0;
+			} else if (chr == '!') {
+				break;
+			} else {
+				throw new Error('Invlid Pattern : Char ' + chr + ' not recognised');
+			}
+		}
+	}
 }
