@@ -18,6 +18,7 @@ function Init() {
 	const gameManager = new GameManager(board, canvas, settings);
 	gameManager.InitGamepad();
 	gameManager.InitImportDiv();
+	gameManager.InitExportDiv();
 }
 
 Init();

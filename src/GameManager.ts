@@ -17,6 +17,8 @@ export class GameManager {
 
 	currentImport: string;
 	importCoord: { x: number; y: number };
+	exportCoordStart: { x: number; y: number };
+	exportCoordEnd: { x: number; y: number };
 
 	constructor(board: Board, canvas: HTMLCanvasElement, settings: GameSettings, initCanvas = true) {
 		this.canvas = canvas;
@@ -25,6 +27,8 @@ export class GameManager {
 		this.isPlaying = false;
 		this.currentImport = '';
 		this.importCoord = { x: 0, y: 0 };
+		this.exportCoordStart = { x: 0, y: 0 };
+		this.exportCoordEnd = { x: 1, y: 1 };
 
 		if (initCanvas) {
 			this.InitCanvas();
@@ -57,6 +61,7 @@ export class GameManager {
 		const context = this.canvas.getContext('2d');
 		const importSize = this.currentImport ? this.board.GetPatternSize(this.currentImport) : null;
 
+		// Color Snippets
 		let hex2rgb = (c: string) =>
 			`${c.match(/\w\w/g)?.map(x => (isNaN(parseInt(x, 16)) ? 0 : parseInt(x, 16)))}`;
 		let rgb2hex = (c: string) =>
@@ -97,11 +102,18 @@ export class GameManager {
 			for (let y = 0; y < boardHeight; y++) {
 				context.fillStyle = this.board.GetCell({ x, y }) ? this.settings.cellColor : 'white';
 				if (
-					importSize &&
-					x >= this.importCoord.x &&
-					x < this.importCoord.x + importSize.width &&
-					y >= this.importCoord.y &&
-					y < this.importCoord.y + importSize.height
+					(importSize &&
+						x >= this.importCoord.x &&
+						x < this.importCoord.x + importSize.width &&
+						y >= this.importCoord.y &&
+						y < this.importCoord.y + importSize.height) ||
+					(!(document.querySelector('.export-div') as HTMLInputElement).classList.contains(
+						'hidden',
+					) &&
+						x >= this.exportCoordStart.x &&
+						x <= this.exportCoordEnd.x &&
+						y >= this.exportCoordStart.y &&
+						y <= this.exportCoordEnd.y)
 				) {
 					context.fillStyle = this.board.GetCell({ x, y })
 						? overlayColors(this.settings.cellColor, this.settings.importCellColor, 0.6)
@@ -248,7 +260,8 @@ export class GameManager {
 			(document.querySelector('.import-div') as HTMLDivElement).classList.remove('hidden');
 		});
 		exportBtn.addEventListener('click', () => {
-			alert('Not implemented yet');
+			(document.querySelector('.export-div') as HTMLDivElement).classList.remove('hidden');
+			this.DrawBoard();
 		});
 
 		const resetBtn = document.querySelector('.gamepad .reset-btn') as HTMLParagraphElement;
@@ -299,10 +312,6 @@ export class GameManager {
 
 		const closeBtn = document.querySelector('.import-div .close-btn') as HTMLParagraphElement;
 		closeBtn.addEventListener('click', () => {
-			this.board.ImportPattern(this.currentImport, {
-				x: this.importCoord.x,
-				y: this.importCoord.y,
-			});
 			this.importCoord = { x: 0, y: 0 };
 			this.currentImport = '';
 			coordXInput.value = '0';
@@ -347,6 +356,129 @@ export class GameManager {
 				importDiv.classList.add('hidden');
 				this.DrawBoard();
 			}
+		});
+	}
+
+	InitExportDiv() {
+		const exportDiv = document.querySelector('.export-div') as HTMLDivElement;
+		const coordXInputStart = document.querySelector(
+			'.export-div .start-coord #coord-x',
+		) as HTMLInputElement;
+		const coordYInputStart = document.querySelector(
+			'.export-div .start-coord #coord-y',
+		) as HTMLInputElement;
+		const coordXInputEnd = document.querySelector(
+			'.export-div .end-coord #coord-x',
+		) as HTMLInputElement;
+		const coordYInputEnd = document.querySelector(
+			'.export-div .end-coord #coord-y',
+		) as HTMLInputElement;
+
+		let exportName = '';
+
+		coordXInputStart.value = this.exportCoordStart.x.toString();
+		coordXInputStart.min = '0';
+		coordXInputStart.max = this.board.width.toString();
+		coordXInputStart.addEventListener('input', () => {
+			const newValue = parseInt(coordXInputStart.value);
+			if (!isNaN(newValue) && newValue >= 0 && newValue < this.exportCoordEnd.x) {
+				coordXInputStart.classList.remove('invalid');
+				this.exportCoordStart.x = newValue;
+				this.DrawBoard();
+			} else {
+				coordXInputStart.classList.add('invalid');
+			}
+		});
+
+		coordYInputStart.value = this.exportCoordStart.y.toString();
+		coordYInputStart.min = '0';
+		coordYInputStart.max = this.board.height.toString();
+		coordYInputStart.addEventListener('input', () => {
+			const newValue = parseInt(coordYInputStart.value);
+			if (!isNaN(newValue) && newValue >= 0 && newValue < this.exportCoordEnd.y) {
+				coordYInputStart.classList.remove('invalid');
+				this.exportCoordStart.y = newValue;
+				this.DrawBoard();
+			} else {
+				coordYInputStart.classList.add('invalid');
+			}
+		});
+
+		coordXInputEnd.value = this.exportCoordEnd.x.toString();
+		coordXInputEnd.min = '0';
+		coordXInputEnd.max = this.board.width.toString();
+		coordXInputEnd.addEventListener('input', () => {
+			const newValue = parseInt(coordXInputEnd.value);
+			if (!isNaN(newValue) && newValue >= 0 && newValue < this.board.width) {
+				coordXInputEnd.classList.remove('invalid');
+				this.exportCoordEnd.x = newValue;
+				this.DrawBoard();
+			} else {
+				coordXInputEnd.classList.add('invalid');
+			}
+		});
+
+		coordYInputEnd.value = this.exportCoordEnd.y.toString();
+		coordYInputEnd.min = '0';
+		coordYInputEnd.max = this.board.height.toString();
+		coordYInputEnd.addEventListener('input', () => {
+			const newValue = parseInt(coordYInputEnd.value);
+			if (!isNaN(newValue) && newValue >= 0 && newValue < this.board.height) {
+				coordYInputEnd.classList.remove('invalid');
+				this.exportCoordEnd.y = newValue;
+				this.DrawBoard();
+			} else {
+				coordYInputEnd.classList.add('invalid');
+			}
+		});
+
+		const closeBtn = document.querySelector('.export-div .close-btn') as HTMLParagraphElement;
+		closeBtn.addEventListener('click', () => {
+			this.exportCoordStart = { x: 0, y: 0 };
+			this.exportCoordEnd = { x: 1, y: 1 };
+			coordXInputStart.value = '0';
+			coordYInputStart.value = '0';
+			coordXInputEnd.value = '1';
+			coordYInputEnd.value = '1';
+			exportName = '';
+			exportInput.value = '';
+			exportDiv.classList.add('hidden');
+			this.DrawBoard();
+		});
+
+		const exportInput = document.querySelector(
+			'.export-div .export-name-div #export-name',
+		) as HTMLInputElement;
+		exportInput.addEventListener('change', () => {
+			exportName = exportInput.value;
+		});
+
+		const exportBtn = document.querySelector('.export-div .export-btn') as HTMLParagraphElement;
+		exportBtn.addEventListener('click', () => {
+			var blob = new Blob(
+				[this.board.ExportPattern(this.exportCoordStart, this.exportCoordEnd, exportName)],
+				{
+					type: 'text/plain',
+				},
+			);
+			var downloadLink = document.createElement('a');
+			downloadLink.href = URL.createObjectURL(blob);
+			downloadLink.download = (exportName || 'pattern') + '.rle';
+			downloadLink.style.display = 'none';
+			document.body.appendChild(downloadLink);
+			downloadLink.click();
+			downloadLink.remove();
+
+			this.exportCoordStart = { x: 0, y: 0 };
+			this.exportCoordEnd = { x: 1, y: 1 };
+			coordXInputStart.value = '0';
+			coordYInputStart.value = '0';
+			coordXInputEnd.value = '1';
+			coordYInputEnd.value = '1';
+			exportName = '';
+			exportInput.value = '';
+			exportDiv.classList.add('hidden');
+			this.DrawBoard();
 		});
 	}
 }

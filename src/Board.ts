@@ -120,4 +120,34 @@ export class Board {
 			}
 		}
 	}
+
+	ExportPattern(start: CellCoordinates, end: CellCoordinates, patternName: string) {
+		let result = '';
+		result += `#N ${patternName || 'pattern'}\n`;
+
+		result += `x = ${end.x - start.x + 1}, y = ${end.y - start.y + 1}, rule = B3/S23\n`;
+
+		let currentCount = 1;
+		let currentChr = '';
+
+		for (let y = start.y; y <= end.y; y++) {
+			for (let x = start.x; x <= end.x; x++) {
+				let chr = this.board[x][y] ? 'o' : 'b';
+				if (currentChr == chr) currentCount++;
+				else {
+					result += (currentCount > 1 ? currentCount.toString() : '') + currentChr;
+					currentCount = 1;
+					currentChr = chr;
+				}
+			}
+			if (currentChr == '$') currentCount++;
+			else {
+				result += (currentCount > 1 ? currentCount.toString() : '') + currentChr;
+				currentCount = 1;
+				currentChr = '$';
+			}
+		}
+
+		return result;
+	}
 }

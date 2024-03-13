@@ -96,7 +96,8 @@ body {
   transform: translateY(0);
 }
 
-.import-div {
+.import-div,
+.export-div {
   position: fixed;
   top: calc(50vh - 80px - 20px);
   left: calc(50vw - 200px - 20px);
@@ -111,16 +112,34 @@ body {
   padding: 20px;
 }
 
-.import-div:hover {
+.export-div {
+  top: calc(50vh - 100px - 20px);
+  height: 200px;
+}
+
+.import-div:hover,
+.export-div:hover {
   opacity: 100%;
 }
 
-.import-div .close-btn {
+.import-div .close-btn,
+.export-div .close-btn {
   position: absolute;
   top: -5px;
   right: 15px;
   color: red;
   cursor: pointer;
+}
+
+.export-div .export-name-div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+}
+
+.export-div .export-name-div input {
+  height: 20px;
 }
 
 .import-div input[type=file] {
@@ -140,19 +159,22 @@ body {
   background-color: #363652;
 }
 
-.import-div .coord {
+.import-div .coord,
+.export-div [class*="coord"] {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 6px;
 }
 
-.import-div .coord input {
+.import-div .coord input,
+.export-div [class*="coord"] input {
   height: 20px;
   width: 50px;
 }
 
-.import-div .import-btn {
+.import-div .import-btn,
+.export-div .export-btn {
   position: absolute;
   bottom: 10px;
   right: 30px;
@@ -160,8 +182,12 @@ body {
   cursor: pointer;
 }
 
-.invalid {
+input.invalid {
   border: 1px solid red !important;
+}
+
+p.invalid {
+  color: lightgray !important;
 }
 
 .hidden {
